@@ -2,6 +2,8 @@
 
 A reproducible SQL Server benchmark of a fix I made at work: a bulk import into an entity-attribute-value (EAV) table was slow, and the cause was index maintenance, not the inserts themselves. Replacing seven standard indexes with filtered indexes cut the index entries SQL Server maintains per inserted row from **7.00 to 0.20** and the import time by **77%** in this reproduction.
 
+![Results: index entries per row and import time](docs/images/results.png)
+
 This is a generic rebuild. The schema, data, and code are new; nothing is copied from my employer's system. The production numbers were similar in shape: about 196,000 index entries down to about 2,300 for one import (~98.8%).
 
 **Skills:** SQL Server indexing and execution plans, performance investigation, C# / .NET 9, ADO.NET (`SqlBulkCopy`, `Microsoft.Data.SqlClient`), xUnit, technical writing.

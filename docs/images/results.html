@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Filtered index results</title>
+<style>
+  body { margin: 0; width: 1200px; height: 500px; font-family: "Segoe UI", system-ui, sans-serif; background: #f5f6f8; color: #1d2433; }
+  h1 { font-size: 30px; margin: 34px 48px 4px; }
+  p.sub { margin: 0 48px 26px; color: #5f6b7a; font-size: 18px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 48px; }
+  .card { background: #fff; border: 1px solid #dde2ec; border-radius: 14px; padding: 22px 26px; }
+  .label { font-size: 14px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #5f6b7a; }
+  .bars { margin-top: 14px; }
+  .bar-row { display: grid; grid-template-columns: 90px 1fr 120px; align-items: center; gap: 12px; margin: 10px 0; font-size: 16px; }
+  .track { height: 22px; background: #eef1f5; border-radius: 6px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 6px; }
+  .std { background: #9aa3b2; } .flt { background: #1f6feb; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .delta { margin-top: 8px; font-size: 26px; font-weight: 700; color: #1f6feb; }
+  .note { margin: 22px 48px 0; font-size: 15px; color: #4b5563; }
+</style>
+</head>
+<body>
+  <h1>Filtered indexes for a slow EAV import</h1>
+  <p class="sub">600,000-row import into SQL Server · same data, same queries · only the index definitions change</p>
+  <div class="grid">
+    <div class="card">
+      <div class="label">Index entries maintained per inserted row</div>
+      <div class="bars">
+        <div class="bar-row"><span>Standard</span><div class="track"><div class="fill std" style="width:100%"></div></div><span class="num">7.00</span></div>
+        <div class="bar-row"><span>Filtered</span><div class="track"><div class="fill flt" style="width:2.9%"></div></div><span class="num">0.20</span></div>
+      </div>
+      <div class="delta">−97.1% index entries</div>
+    </div>
+    <div class="card">
+      <div class="label">Import time (median of 3 runs)</div>
+      <div class="bars">
+        <div class="bar-row"><span>Standard</span><div class="track"><div class="fill std" style="width:100%"></div></div><span class="num">11.34 s</span></div>
+        <div class="bar-row"><span>Filtered</span><div class="track"><div class="fill flt" style="width:23.4%"></div></div><span class="num">2.65 s</span></div>
+      </div>
+      <div class="delta">−76.6% import time</div>
+    </div>
+  </div>
+  <p class="note">Verified with actual execution plans: parameterized lookups still seek. The trade-offs (IS NULL searches, legacy SET options) are measured too.</p>
+</body>
+</html>
