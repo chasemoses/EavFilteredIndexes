@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EavFilteredIndexes/EavFilteredIndexes.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EavFilteredIndexes.Tests/EavFilteredIndexes.Tests.csproj" />
+  </Folder>
+</Solution>
