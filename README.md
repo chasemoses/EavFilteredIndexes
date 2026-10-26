@@ -37,7 +37,7 @@ dotnet run --project src/EavFilteredIndexes -c Release -- --items 50000 --runs 3
 ## How I worked through it
 
 ### 1. Symptom
-An import of tracked items got slower as the table grew. The application code was batching sensibly, and the inserted data was small. That points away from the inserts and toward everything SQL Server does *because* of each insert.
+A bulk import of tracked items was a major bottleneck. The rows being inserted were small, which points away from the inserts themselves and toward everything SQL Server does *because* of each insert.
 
 ### 2. Look at the table, not the code
 The table is EAV: one row per (item, attribute, value), with a typed value column for each kind of data (number, date, lookup, user...). Only one of those columns is filled on any row, and most rows are free text, which isn't indexed. But each typed column had its own nonclustered index so it could be searched.
@@ -60,7 +60,7 @@ The benchmark counts index entries and pages from `sys.dm_db_partition_stats`, w
 A smaller index is only a win if the queries that need it still use it. The benchmark runs each query and reads the **actual** execution plan:
 
 - **Parameterized equality and range searches still seek.** SQL Server knows `col = @v` can never match a null, so it can use an `IS NOT NULL` filtered index even when the value is a parameter.
-- **`IS NULL` searches lose the index.** "Which items are missing a lookup value?" now scans the table. Before shipping, I confirmed no screen or report asked that. If one had, I'd have kept a standard index on that one column.
+- **`IS NULL` searches lose the index.** "Which items are missing a lookup value?" now scans the table. Before shipping a change like this, check every screen and report that searches the table for that pattern. If one does, keep a standard index on that one column.
 - **Session SET options matter.** A table with filtered indexes rejects inserts from any session with `QUOTED_IDENTIFIER OFF` (error 1934). Modern drivers default to `ON`, but old scripts and some legacy tools don't. The benchmark demonstrates the failure, so it's on the checklist before deploying.
 
 ## What I'd do differently at larger scale
